@@ -1,0 +1,133 @@
+<?xml version="1.0"?>
+<package>
+    <name>sitewards_disabledproducts</name>
+    <version>1.0.0</version>
+    <stability>stable</stability>
+    <license uri="http://www.opensource.org/licenses/gpl-license.php">GPL</license>
+    <channel>community</channel>
+    <extends/>
+    <summary>Extension to disable the add-to-cart button on products and to display a static cms block instead.</summary>
+    <description>Magento extension to disable the add-to-cart button on products and to display a static cms block instead.&#xD;
+&#xD;
+Customization&#xD;
+-------------&#xD;
+&#xD;
+* You can define the cms block to be displayed instead of the add-to-cart button&#xD;
+* You can set products as disabled in the products details&#xD;
+&#xD;
+Installation instructions&#xD;
+-------------------------&#xD;
+&#xD;
+1. Copy all files in the root of Magento directory.&#xD;
+2. Manually adjust following files by replacing all blocks with "-" by blocks with "+"&#xD;
+   This is required, because the standard magento theme doesn't always use blocks for the add-to-cart button, but contains it directly in other template files&#xD;
+&#xD;
+app\design\frontend\base\default\template\catalog\product\list.phtml&#xD;
+line 60 - 64&#xD;
+-	&lt;?php if($_product-&gt;isSaleable()): ?&gt;&#xD;
+-		&lt;p&gt;&lt;button type="button" title="&lt;?php echo $this-&gt;__('Add to Cart') ?&gt;" class="button btn-cart" onclick="setLocation('&lt;?php echo $this-&gt;getAddToCartUrl($_product) ?&gt;')"&gt;&lt;span&gt;&lt;span&gt;&lt;?php echo $this-&gt;__('Add to Cart') ?&gt;&lt;/span&gt;&lt;/span&gt;&lt;/button&gt;&lt;/p&gt;&#xD;
+-	&lt;?php else: ?&gt;&#xD;
+-		&lt;p class="availability out-of-stock"&gt;&lt;span&gt;&lt;?php echo $this-&gt;__('Out of stock') ?&gt;&lt;/span&gt;&lt;/p&gt;&#xD;
+-	&lt;?php endif; ?&gt;&#xD;
++	&lt;?php if (!Mage::helper('sitewards_disabledproducts')-&gt;isProductDisabled($_product)): ?&gt;&#xD;
++		&lt;?php if($_product-&gt;isSaleable()): ?&gt;&#xD;
++			&lt;p&gt;&lt;button type="button" title="&lt;?php echo $this-&gt;__('Add to Cart') ?&gt;" class="button btn-cart" onclick="setLocation('&lt;?php echo $this-&gt;getAddToCartUrl($_product) ?&gt;')"&gt;&lt;span&gt;&lt;span&gt;&lt;?php echo $this-&gt;__('Add to Cart') ?&gt;&lt;/span&gt;&lt;/span&gt;&lt;/button&gt;&lt;/p&gt;&#xD;
++		&lt;?php else: ?&gt;&#xD;
++			&lt;p class="availability out-of-stock"&gt;&lt;span&gt;&lt;?php echo $this-&gt;__('Out of stock') ?&gt;&lt;/span&gt;&lt;/p&gt;&#xD;
++		&lt;?php endif; ?&gt;&#xD;
++	&lt;?php else: ?&gt;&#xD;
++		&lt;?php&#xD;
++		$sBlockId = Mage::helper('sitewards_disabledproducts')-&gt;getDisabledProductsBlock();&#xD;
++		echo $this-&gt;getLayout()-&gt;createBlock('cms/block')-&gt;setBlockId($sBlockId)-&gt;toHtml();&#xD;
++		?&gt;&#xD;
++	&lt;?php endif; ?&gt;&#xD;
+&#xD;
+app\design\frontend\base\default\template\catalog\product\compare\list.phtml&#xD;
+line 67-71&#xD;
+-	&lt;?php if($_item-&gt;isSaleable()): ?&gt;&#xD;
+-		&lt;p&gt;&lt;button type="button" title="&lt;?php echo $this-&gt;__('Add to Cart') ?&gt;" class="button btn-cart" onclick="setPLocation('&lt;?php echo $this-&gt;helper('catalog/product_compare')-&gt;getAddToCartUrl($_item) ?&gt;', true)"&gt;&lt;span&gt;&lt;span&gt;&lt;?php echo $this-&gt;__('Add to Cart') ?&gt;&lt;/span&gt;&lt;/span&gt;&lt;/button&gt;&lt;/p&gt;&#xD;
+-	&lt;?php else: ?&gt;&#xD;
+-		&lt;p class="availability out-of-stock"&gt;&lt;span&gt;&lt;?php echo $this-&gt;__('Out of stock') ?&gt;&lt;/span&gt;&lt;/p&gt;&#xD;
+-	&lt;?php endif; ?&gt;&#xD;
++	&lt;?php if (!Mage::helper('sitewards_disabledproducts')-&gt;isProductDisabled($_item)): ?&gt;&#xD;
++		&lt;?php if($_item-&gt;isSaleable()): ?&gt;&#xD;
++			&lt;p&gt;&lt;button type="button" title="&lt;?php echo $this-&gt;__('Add to Cart') ?&gt;" class="button btn-cart" onclick="setPLocation('&lt;?php echo $this-&gt;helper('catalog/product_compare')-&gt;getAddToCartUrl($_item) ?&gt;', true)"&gt;&lt;span&gt;&lt;span&gt;&lt;?php echo $this-&gt;__('Add to Cart') ?&gt;&lt;/span&gt;&lt;/span&gt;&lt;/button&gt;&lt;/p&gt;&#xD;
++		&lt;?php else: ?&gt;&#xD;
++			&lt;p class="availability out-of-stock"&gt;&lt;span&gt;&lt;?php echo $this-&gt;__('Out of stock') ?&gt;&lt;/span&gt;&lt;/p&gt;&#xD;
++		&lt;?php endif; ?&gt;&#xD;
++	&lt;?php else: ?&gt;&#xD;
++		&lt;?php&#xD;
++		$sBlockId = Mage::helper('sitewards_disabledproducts')-&gt;getDisabledProductsBlock();&#xD;
++		echo $this-&gt;getLayout()-&gt;createBlock('cms/block')-&gt;setBlockId($sBlockId)-&gt;toHtml();&#xD;
++		?&gt;&#xD;
++	&lt;?php endif; ?&gt;&#xD;
+&#xD;
+app\design\frontend\base\default\template\catalog\product\compare\list.phtml&#xD;
+line 127-131&#xD;
+-	&lt;?php if($_item-&gt;isSaleable()): ?&gt;&#xD;
+-		&lt;p&gt;&lt;button type="button" title="&lt;?php echo $this-&gt;__('Add to Cart') ?&gt;" class="button btn-cart" onclick="setPLocation('&lt;?php echo $this-&gt;helper('catalog/product_compare')-&gt;getAddToCartUrl($_item) ?&gt;', true)"&gt;&lt;span&gt;&lt;span&gt;&lt;?php echo $this-&gt;__('Add to Cart') ?&gt;&lt;/span&gt;&lt;/span&gt;&lt;/button&gt;&lt;/p&gt;&#xD;
+-	&lt;?php else: ?&gt;&#xD;
+-		&lt;p class="availability out-of-stock"&gt;&lt;span&gt;&lt;?php echo $this-&gt;__('Out of stock') ?&gt;&lt;/span&gt;&lt;/p&gt;&#xD;
+-	&lt;?php endif; ?&gt;&#xD;
++	&lt;?php if (!Mage::helper('sitewards_disabledproducts')-&gt;isProductDisabled($_item)): ?&gt;&#xD;
++		&lt;?php if($_item-&gt;isSaleable()): ?&gt;&#xD;
++			&lt;p&gt;&lt;button type="button" title="&lt;?php echo $this-&gt;__('Add to Cart') ?&gt;" class="button btn-cart" onclick="setPLocation('&lt;?php echo $this-&gt;helper('catalog/product_compare')-&gt;getAddToCartUrl($_item) ?&gt;', true)"&gt;&lt;span&gt;&lt;span&gt;&lt;?php echo $this-&gt;__('Add to Cart') ?&gt;&lt;/span&gt;&lt;/span&gt;&lt;/button&gt;&lt;/p&gt;&#xD;
++		&lt;?php else: ?&gt;&#xD;
++			&lt;p class="availability out-of-stock"&gt;&lt;span&gt;&lt;?php echo $this-&gt;__('Out of stock') ?&gt;&lt;/span&gt;&lt;/p&gt;&#xD;
++		&lt;?php endif; ?&gt;&#xD;
++	&lt;?php else: ?&gt;&#xD;
++		&lt;?php&#xD;
++		$sBlockId = Mage::helper('sitewards_disabledproducts')-&gt;getDisabledProductsBlock();&#xD;
++		echo $this-&gt;getLayout()-&gt;createBlock('cms/block')-&gt;setBlockId($sBlockId)-&gt;toHtml();&#xD;
++		?&gt;&#xD;
++	&lt;?php endif; ?&gt;&#xD;
+&#xD;
+app\design\frontend\base\default\template\wishlist\item\column\cart.phtml&#xD;
+line 34-47&#xD;
+-	&lt;div class="add-to-cart-alt"&gt;&#xD;
+-	&lt;?php if ($item-&gt;canHaveQty() &amp;&amp; $item-&gt;getProduct()-&gt;isVisibleInSiteVisibility()): ?&gt;&#xD;
+-		&lt;input type="text" class="input-text qty validate-not-negative-number" name="qty[&lt;?php echo $item-&gt;getId() ?&gt;]" value="&lt;?php echo $this-&gt;getAddToCartQty($item) * 1 ?&gt;" /&gt;&#xD;
+-	&lt;?php endif; ?&gt;&#xD;
+-	&lt;?php if ($product-&gt;isSaleable()): ?&gt;&#xD;
+-		&lt;button type="button" title="&lt;?php echo $this-&gt;__('Add to Cart') ?&gt;" onclick="addWItemToCart(&lt;?php echo $item-&gt;getId()?&gt;);" class="button btn-cart"&gt;&lt;span&gt;&lt;span&gt;&lt;?php echo $this-&gt;__('Add to Cart') ?&gt;&lt;/span&gt;&lt;/span&gt;&lt;/button&gt;&#xD;
+-	&lt;?php else: ?&gt;&#xD;
+-		&lt;?php if ($product-&gt;getIsSalable()): ?&gt;&#xD;
+-			&lt;p class="availability in-stock"&gt;&lt;span&gt;&lt;?php echo $this-&gt;__('In stock') ?&gt;&lt;/span&gt;&lt;/p&gt;&#xD;
+-		&lt;?php else: ?&gt;&#xD;
+-			&lt;p class="availability out-of-stock"&gt;&lt;span&gt;&lt;?php echo $this-&gt;__('Out of stock') ?&gt;&lt;/span&gt;&lt;/p&gt;&#xD;
+-		&lt;?php endif; ?&gt;&#xD;
+-	&lt;?php endif; ?&gt;&#xD;
+-	&lt;/div&gt;&#xD;
++	&lt;?php if (!Mage::helper('sitewards_disabledproducts')-&gt;isProductDisabled($product)): ?&gt;&#xD;
++		&lt;div class="add-to-cart-alt"&gt;&#xD;
++		&lt;?php if ($item-&gt;canHaveQty() &amp;&amp; $item-&gt;getProduct()-&gt;isVisibleInSiteVisibility()): ?&gt;&#xD;
++			&lt;input type="text" class="input-text qty validate-not-negative-number" name="qty[&lt;?php echo $item-&gt;getId() ?&gt;]" value="&lt;?php echo $this-&gt;getAddToCartQty($item) * 1 ?&gt;" /&gt;&#xD;
++		&lt;?php endif; ?&gt;&#xD;
++		&lt;?php if ($product-&gt;isSaleable()): ?&gt;&#xD;
++			&lt;button type="button" title="&lt;?php echo $this-&gt;__('Add to Cart') ?&gt;" onclick="addWItemToCart(&lt;?php echo $item-&gt;getId()?&gt;);" class="button btn-cart"&gt;&lt;span&gt;&lt;span&gt;&lt;?php echo $this-&gt;__('Add to Cart') ?&gt;&lt;/span&gt;&lt;/span&gt;&lt;/button&gt;&#xD;
++		&lt;?php else: ?&gt;&#xD;
++			&lt;?php if ($product-&gt;getIsSalable()): ?&gt;&#xD;
++				&lt;p class="availability in-stock"&gt;&lt;span&gt;&lt;?php echo $this-&gt;__('In stock') ?&gt;&lt;/span&gt;&lt;/p&gt;&#xD;
++			&lt;?php else: ?&gt;&#xD;
++				&lt;p class="availability out-of-stock"&gt;&lt;span&gt;&lt;?php echo $this-&gt;__('Out of stock') ?&gt;&lt;/span&gt;&lt;/p&gt;&#xD;
++			&lt;?php endif; ?&gt;&#xD;
++		&lt;?php endif; ?&gt;&#xD;
++		&lt;/div&gt;&#xD;
++	&lt;?php else: ?&gt;&#xD;
++		&lt;div class="add-to-cart-alt"&gt;&#xD;
++			&lt;?php&#xD;
++			$sBlockId = Mage::helper('sitewards_disabledproducts')-&gt;getDisabledProductsBlock();&#xD;
++			echo $this-&gt;getLayout()-&gt;createBlock('cms/block')-&gt;setBlockId($sBlockId)-&gt;toHtml();&#xD;
++			?&gt;&#xD;
++		&lt;/div&gt;&#xD;
++	&lt;?php endif; ?&gt;&#xD;
+&#xD;
+contact: http://www.sitewards.com</description>
+    <notes>FIrst release of the extension.</notes>
+    <authors><author><name>Sitewards Magento Team</name><user>sitewards</user><email>magento@sitewards.com</email></author></authors>
+    <date>2013-02-06</date>
+    <time>10:22:10</time>
+    <contents><target name="magecommunity"><dir name="Sitewards"><dir name="DisabledProducts"><dir name="Helper"><file name="Data.php" hash="302491d171637f882ac9f5126a1a95d1"/></dir><dir name="Model"><dir name="Resource"><dir name="Eav"><dir name="Mysql4"><file name="Setup.php" hash="0fe90fe89e042e56f8fe60972d6409e8"/></dir></dir></dir><dir name="System"><dir name="Config"><dir name="Source"><dir name="Cms"><file name="Block.php" hash="af40acf0688f4471be2a0cb1878cc7a4"/></dir></dir></dir></dir></dir><dir name="etc"><file name="adminhtml.xml" hash="d98117511961c714288ded79e3f19769"/><file name="config.xml" hash="201c724b1c4a3242b42ba4b42a531653"/><file name="system.xml" hash="c1379df86a31ee9d570772062f8c81f4"/></dir><dir name="sql"><dir name="sitewards_disabledproducts_setup"><file name="mysql4-install-0.1.0.php" hash="2df441a6f1f7a7be6734c0e9105fda17"/></dir></dir></dir></dir></target><target name="mageetc"><dir name="modules"><file name="Sitewards_DisabledProducts.xml" hash="700a3b6a5d74b3b66531ca90bfab874c"/></dir></target><target name="magelocale"><dir name="de_DE"><file name="Sitewards_DisabledProducts.csv" hash="6190d8e2ad571e8bdeacde9c0aae9efd"/></dir></target><target name="magedesign"><dir name="frontend"><dir name="base"><dir name="default"><dir name="layout"><dir name="sitewards"><file name="disabledproducts.xml" hash="b47a1dfc4b1bb9b3f2ff1ef4be472eea"/></dir></dir><dir name="template"><dir name="sitewards"><dir name="disabledproducts"><dir name="catalog"><dir name="product"><file name="addtocart.phtml" hash="ff2aa2106d8eff05ae0fb87244eb657d"/></dir></dir></dir></dir></dir></dir></dir></dir></target></contents>
+    <compatible/>
+    <dependencies><required><php><min>5.2.0</min><max>6.0.0</max></php></required></dependencies>
+</package>
