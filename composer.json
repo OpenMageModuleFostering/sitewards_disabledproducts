@@ -1,5 +1,5 @@
 {
-    "name": "OpenMageModuleFostering\/sitewards_disabledproducts",
+    "name": "openmage-module-fostering\/sitewards_disabledproducts",
     "type": "magento-module",
     "license": "GPL",
     "homepage": "",
